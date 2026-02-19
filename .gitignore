@@ -38,3 +38,6 @@ src/routeTree.gen.ts
 
 # TanStack build cache
 .tanstack/
+
+# Claude Code local settings (personal permissions, not shared)
+.claude/settings.local.json
