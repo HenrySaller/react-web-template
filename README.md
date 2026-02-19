@@ -1,73 +1,83 @@
-# React + TypeScript + Vite
+# React Web Template
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React web template optimized for AI-assisted development and rapid prototyping.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Category | Package |
+|---|---|
+| Build | Vite v7 |
+| Language | TypeScript (strict) |
+| Routing | TanStack Router v1 (file-based) |
+| Data Fetching | TanStack Query v5 |
+| State | Zustand v5 |
+| Styling | Tailwind CSS v4 |
+| Components | shadcn/ui |
+| Forms | React Hook Form + Zod |
+| HTTP | ky |
+| Linting | Biome v2 |
+| Tests | Vitest + React Testing Library |
+| E2E | Playwright |
+| Package Manager | pnpm |
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Commands
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm dev            # Start dev server (http://localhost:5173)
+pnpm build          # Production build
+pnpm preview        # Preview production build
+pnpm check          # Biome lint + format (auto-fix)
+pnpm test           # Vitest (watch mode)
+pnpm test:run       # Vitest (single run)
+pnpm e2e            # Playwright E2E tests
+pnpm typecheck      # TypeScript strict check
 ```
+
+## Project Structure
+
+```
+src/
+├── app/          # Providers, router instance, env config
+├── routes/       # TanStack file-based routes
+├── components/
+│   └── ui/       # shadcn/ui components
+├── features/     # Feature modules (see features/README.md)
+├── hooks/        # Shared custom hooks
+├── lib/          # api-client, query-client, utils
+├── stores/       # Zustand global stores
+└── types/        # Shared TypeScript types
+```
+
+## Adding a Route
+
+Create a file in `src/routes/` — the route tree is auto-generated on next `pnpm dev` or `pnpm build`.
+
+```ts
+// src/routes/about.tsx
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/about')({
+  component: AboutPage,
+})
+
+function AboutPage() {
+  return <div>About</div>
+}
+```
+
+## Adding shadcn/ui Components
+
+```bash
+pnpm dlx shadcn@latest add <component-name>
+```
+
+## Environment Variables
+
+Copy `.env.example` to `.env.local` and fill in values. All client-side vars must be prefixed with `VITE_`.
