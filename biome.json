@@ -13,8 +13,7 @@
       "!dist",
       "!src/routeTree.gen.ts",
       "!playwright-report",
-      "!test-results",
-      "!**/*.css"
+      "!test-results"
     ]
   },
   "formatter": {
@@ -41,13 +40,7 @@
   },
   "css": {
     "parser": {
-      "cssModules": false
-    },
-    "formatter": {
-      "enabled": false
-    },
-    "linter": {
-      "enabled": false
+      "tailwindDirectives": true
     }
   }
 }
