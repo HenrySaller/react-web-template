@@ -7,48 +7,34 @@ If empty, update all dependencies in `package.json`.
 
 ## Steps
 
-### 1. Read current state
-Read `package.json` to get the full dependency list and their current versions.
+### 1. Determine what is outdated
 
-### 2. Determine scope
-If `$ARGUMENTS` is provided, work only on those packages. Otherwise work on all dependencies and devDependencies.
+Run `pnpm outdated --format json` to get current and latest versions in one shot.
+If `$ARGUMENTS` is provided, filter to those packages. Skip any that are already up to date.
 
-### 3. Research each package
-For each package in scope:
-- Use web search to find the latest version on npm.
-- Compare to the current version. If already up to date, skip.
-- Fetch and read the changelog or release notes (GitHub releases, CHANGELOG.md, or npm page) covering the range from the current version to the latest.
-- Extract all of the following that are relevant to this codebase:
-  - Breaking changes and required migrations
-  - Deprecations (APIs, patterns, config options that still work but are discouraged)
-  - New recommended APIs or patterns that replace older ones
-  - Performance or correctness improvements achievable by adopting new features
-  - Changes to configuration format or recommended config
+### 2. Read changelogs
 
-### 4. Make a plan
-Before touching any files, produce a structured plan. For each package that needs work, list:
-- Current version → latest version
-- What needs to change in the codebase (migrations, deprecation fixes, best-practice updates)
-- Which files are likely affected
+For each outdated package, run `pnpm view <pkg> repository.url` to get the GitHub URL, then fetch the releases or CHANGELOG.md covering the range from current to latest. Extract only what is relevant to this codebase:
+- Breaking changes and required migrations
+- Deprecated APIs or patterns
+- New recommended APIs or config that replace older ones
 
-Present this plan and wait for approval before proceeding.
+### 3. Plan
 
-### 5. Update `package.json`
-Apply the new versions for all packages being updated.
+Produce a structured plan. For each package list: current → latest, what needs to change, which files are affected. Wait for approval before proceeding.
 
-### 6. Install
-Run `pnpm install` to apply changes and update `pnpm-lock.yaml`.
+### 4. Update and install
 
-### 7. Update the codebase
-For each package with changes, work through the plan:
-- Fix breaking changes
-- Replace deprecated APIs with their modern equivalents
-- Adopt new recommended patterns and config where it improves correctness, performance, or maintainability
-- Do not refactor code unrelated to the dependency changes
+Update versions in `package.json`, then run `pnpm install`.
 
-### 8. Verify
-- Run `pnpm typecheck` and fix any type errors from the updates.
-- Run `pnpm check` to lint and format changed files.
+### 5. Migrate the codebase
 
-### 9. Summarise
-Report what was updated, what changed in the codebase, and anything that was intentionally left for the developer to decide.
+Work through the plan: fix breaking changes, replace deprecated APIs, adopt new recommended patterns. Do not touch code unrelated to the dependency changes.
+
+### 6. Verify
+
+Run `pnpm typecheck` then `pnpm check`. Fix any errors before finishing.
+
+### 7. Summarise
+
+Report what was updated, what changed in the codebase, and anything left for the developer to decide.
