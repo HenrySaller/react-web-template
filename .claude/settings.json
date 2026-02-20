@@ -17,6 +17,9 @@
       "Bash(pnpm format:*)",
       "Bash(pnpm check:*)",
       "Bash(pnpm typecheck:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm outdated:*)",
+      "Bash(pnpm view:*)",
       "Bash(npx shadcn@latest add:*)"
     ]
   }
