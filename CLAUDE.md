@@ -57,13 +57,15 @@ src/
 
 ## Ground Rules
 
-Detailed conventions live in `.cursor/rules/`:
+**Before writing any code, you MUST read every file in `.cursor/rules/`:**
 
-- **Components** → `.cursor/rules/components.md` — presentational-only, props vs state, naming
-- **Hooks** → `.cursor/rules/hooks.md` — single responsibility, naming, return shape, data fetching
-- **Stores** → `.cursor/rules/stores.md` — placement, selectors, when to use Zustand vs useState
-- **Testing** → `.cursor/rules/testing.md` — E2E first, unit test targets, coverage exceptions
-- **Code style** → `.cursor/rules/react.md` — Biome conventions, TypeScript, file naming, imports
+- `.cursor/rules/react.md` — code style, file naming, TypeScript conventions
+- `.cursor/rules/components.md` — presentational-only, props vs state, route shells
+- `.cursor/rules/hooks.md` — single responsibility, form hooks, return shape
+- `.cursor/rules/stores.md` — placement, naming, selectors, expose via hooks
+- `.cursor/rules/testing.md` — E2E first, unit test targets, coverage exceptions
+
+Do not proceed with implementation until all five files have been read.
 
 ## Adding Routes
 

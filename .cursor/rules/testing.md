@@ -92,6 +92,8 @@ Coverage exclusions in `vitest.config.ts` are pattern-based — they apply to ca
 | `src/**/*.stories.tsx` | Storybook stories, not production code |
 | `src/main.tsx` | App entry point, covered by E2E |
 
-# Performance
+# Verification Checklist
 
-E2E tests capture Web Vitals (LCP, FCP, CLS, TTFB) as part of the test run. Results are signals for iteration — not hard failures. Use the `/perf-report` skill to run the suite and surface metrics.
+A feature is not complete until:
+1. E2E tests pass — `pnpm e2e`
+2. Unit coverage is 100% on all new/modified hooks, utils, and services — `pnpm test:coverage`
