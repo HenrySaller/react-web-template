@@ -1,48 +1,41 @@
-# React Web Template - Cursor Rules
+---
+description: Code style and general conventions for all TypeScript and React files
+globs: ["src/**/*.ts", "src/**/*.tsx"]
+alwaysApply: true
+---
 
-## Stack
-
-TypeScript (strict) · React 19 · Vite 7 · TanStack Router · TanStack Query · Zustand · Tailwind CSS v4 · shadcn/ui · Biome · Vitest · Playwright
-
-## Code Style
+# Code Style
 
 - Single quotes, no semicolons, 2-space indent, trailing commas (enforced by Biome)
-- Named function declarations for components (not arrow functions at top-level)
+- Named function declarations at the top level — not arrow functions
 - `type` imports with `verbatimModuleSyntax`: `import type { Foo } from './foo'`
-- Path alias: `@/` → `src/`; never use relative paths outside same directory
+- Path alias: `@/` → `src/`; never use relative imports outside the same directory
 
-## Components
-
-- Use shadcn/ui components from `@/components/ui/` for base UI elements
-- Use `cn()` from `@/lib/utils` for conditional Tailwind classes
-- Add new shadcn components: `npx shadcn@latest add <name>`
-
-## Routing
-
-- Add routes in `src/routes/` using file-based conventions
-- Route files export `const Route = createFileRoute('...')({...})`
-- Route tree at `src/routeTree.gen.ts` is auto-generated — do not edit
-
-## Data Fetching
-
-- Use TanStack Query for server state; Zustand for client-only state
-- Create queries in `src/features/<feature>/services/` or inline with `queryOptions`
-- Always type API responses with Zod schemas
-
-## Forms
-
-- Use React Hook Form + Zod via `@hookform/resolvers/zod`
-- Define schema with `z.object({...})` and infer type with `z.infer<typeof schema>`
-
-## File Naming
+# File Naming
 
 - Components: `PascalCase.tsx`
 - Hooks: `useCamelCase.ts`
 - Utilities: `camelCase.ts`
 - Stores: `useCamelCaseStore.ts`
-- Feature files: `kebab-case/` directories
+- Feature directories: `kebab-case/`
 
-## No Barrel Files
+# No Barrel Files
 
-Import directly: `import { Button } from '@/components/ui/button'`
-Never: `import { Button } from '@/components/ui'`
+Always import directly from source:
+
+```ts
+// Correct
+import { Button } from '@/components/ui/button'
+import { useCart } from '@/features/cart/hooks/useCart'
+
+// Wrong
+import { Button } from '@/components/ui'
+import { useCart } from '@/features/cart'
+```
+
+# TypeScript
+
+- Strict mode — all code must pass `pnpm typecheck`
+- Prefer `type` over `interface` for object shapes
+- Use `z.infer<typeof schema>` to derive types from Zod schemas — never duplicate by hand
+- No `any` — use `unknown` and narrow with guards or Zod

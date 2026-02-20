@@ -21,46 +21,53 @@ A modern React web template optimized for AI-assisted development and rapid prot
 ## Commands
 
 ```bash
-pnpm dev          # Start dev server (http://localhost:5173)
-pnpm build        # Production build (tsc + vite build)
-pnpm preview      # Preview production build
-pnpm check        # Biome lint + format (auto-fix)
-pnpm lint         # Biome lint only
-pnpm format       # Biome format only
-pnpm test         # Vitest (watch mode)
-pnpm test:run     # Vitest (single run)
+pnpm dev           # Start dev server (http://localhost:5173)
+pnpm build         # Production build (tsc + vite build)
+pnpm preview       # Preview production build
+pnpm check         # Biome lint + format (auto-fix)
+pnpm lint          # Biome lint only
+pnpm format        # Biome format only
+pnpm test          # Vitest (watch mode)
+pnpm test:run      # Vitest (single run)
 pnpm test:coverage # Vitest with coverage
-pnpm e2e          # Playwright E2E tests
-pnpm e2e:ui       # Playwright UI mode
-pnpm typecheck    # TypeScript strict check
+pnpm e2e           # Playwright E2E tests
+pnpm e2e:ui        # Playwright UI mode
+pnpm typecheck     # TypeScript strict check
 ```
 
 ## Architecture
 
 ```
 src/
-├── app/          # App shell: providers, router, env config
-├── routes/       # TanStack file-based routes
-├── components/   # Shared components
-│   └── ui/       # shadcn/ui auto-generated
-├── features/     # Feature modules (see features/README.md)
-├── hooks/        # Shared custom hooks
-├── lib/          # Utilities: api-client, query-client, utils
-├── stores/       # Zustand global stores
-└── types/        # Shared TypeScript types
+├── app/              # App shell: providers, router, env config
+├── routes/           # TanStack file-based routes (auto-generates routeTree.gen.ts)
+├── components/       # Shared presentational components
+│   └── ui/           # shadcn/ui components (editable — migrate changes on updates)
+├── features/         # Feature modules
+│   └── <name>/
+│       ├── components/   # Presentational components for this feature
+│       ├── hooks/        # Logic hooks for this feature
+│       ├── services/     # API calls, Zod schemas, TanStack Query options
+│       └── stores/       # Feature-scoped Zustand stores
+├── hooks/            # Shared custom hooks (used across features)
+├── lib/              # Utilities: api-client, query-client, utils
+├── stores/           # Global Zustand stores (auth, session, cross-feature state)
+└── types/            # Shared TypeScript types
 ```
 
-## Conventions
+## Ground Rules
 
-- **No barrel files**: Import directly from source files
-- **Path alias**: Use `@/` for `src/` (e.g., `import { cn } from '@/lib/utils'`)
-- **Strict TypeScript**: All code must pass `pnpm typecheck`
-- **Zod at boundaries**: Validate env vars, API responses, and form inputs with Zod
-- **Feature-first**: New features go in `src/features/<feature-name>/`
+Detailed conventions live in `.cursor/rules/`:
+
+- **Components** → `.cursor/rules/components.md` — presentational-only, props vs state, naming
+- **Hooks** → `.cursor/rules/hooks.md` — single responsibility, naming, return shape, data fetching
+- **Stores** → `.cursor/rules/stores.md` — placement, selectors, when to use Zustand vs useState
+- **Testing** → `.cursor/rules/testing.md` — E2E first, unit test targets, coverage exceptions
+- **Code style** → `.cursor/rules/react.md` — Biome conventions, TypeScript, file naming, imports
 
 ## Adding Routes
 
-Create a file in `src/routes/` — TanStack Router auto-generates the route tree on next build/dev.
+Create a file in `src/routes/` — TanStack Router auto-generates the route tree on next build/dev. Never edit `routeTree.gen.ts`.
 
 ```ts
 // src/routes/about.tsx
@@ -81,6 +88,8 @@ function AboutPage() {
 npx shadcn@latest add <component-name>
 ```
 
+Files land in `src/components/ui/` and may be edited to match designs. When pulling an updated version via the CLI, manually migrate any local style changes into the newly generated file.
+
 ## Environment Variables
 
-Copy `.env.example` to `.env.local` and fill in values. All env vars must be prefixed with `VITE_` to be exposed to the client.
+Copy `.env.example` to `.env.local` and fill in values. All env vars must be prefixed with `VITE_` to be exposed to the client. Validate with Zod in `src/app/env.ts`.
