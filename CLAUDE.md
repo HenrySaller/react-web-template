@@ -67,6 +67,48 @@ src/
 
 Do not proceed with implementation until all five files have been read.
 
+## Implementing a Feature — Mandatory Order
+
+You MUST follow this sequence exactly. Do not skip or reorder steps.
+
+1. **Write the E2E test first** — create `e2e/<feature>.spec.ts` before writing any source files. State the file path and test cases before proceeding.
+2. **Implement** — write stores, hooks, components, and routes until `pnpm e2e` passes.
+3. **Write unit tests** — cover every new hook and service file with Vitest.
+4. **Verify** — run the commands below and show their full output. Fix any failures before declaring done.
+
+## Definition of Done
+
+A feature is not complete until all steps below pass. Run them in this exact order, act on the output of each before moving to the next, and show the output of each command.
+
+**STEP 1 — E2E tests. Run and make sure all tests pass.**
+```bash
+pnpm e2e
+```
+
+**STEP 2 — Coverage. Fix gaps until coverage on all new and modified hooks and services is 100%.**
+```bash
+pnpm test:coverage
+```
+
+**STEP 3 — Unit tests. Fix any failures before continuing.**
+```bash
+pnpm test:run
+```
+
+**STEP 4 — Type check. Fix every error before continuing.**
+```bash
+pnpm typecheck
+```
+
+**STEP 5 — Lint, format, and auto-fix. Address every remaining issue before continuing.**
+```bash
+pnpm lint
+pnpm format
+pnpm check
+```
+
+Do not say you are finished until you have shown passing output from every step.
+
 ## Adding Routes
 
 Create a file in `src/routes/` — TanStack Router auto-generates the route tree on next build/dev. Never edit `routeTree.gen.ts`.

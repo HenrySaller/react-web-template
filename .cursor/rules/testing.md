@@ -15,11 +15,23 @@ alwaysApply: false
 
 Components are covered exclusively through E2E tests. Do not write unit tests for component files.
 
-# E2E First
+# Mandatory Workflow — Do Not Deviate
 
-New features start with a Playwright test that defines the success criteria. The feature is complete when:
-1. The E2E test passes
-2. Unit coverage on hooks and services is 100%
+Follow this sequence for every feature. Do not skip steps or reorder them.
+
+**STEP 1 — Write the E2E test before any implementation.**
+Create `e2e/<feature>.spec.ts`. State the file path and list the test cases you will cover before writing any source files. The test will fail at first — that is expected.
+
+**STEP 2 — Implement until the E2E test passes.**
+Write stores, hooks, components, and routes. Run `pnpm e2e` and show the passing output before moving on.
+
+**STEP 3 — Write unit tests for every new hook and service.**
+Use Vitest + `renderHook`. Test behaviour and outcomes — not internal state or implementation details.
+
+**STEP 4 — Run `pnpm test:coverage` and show the output.**
+Coverage on all new and modified hooks and services must be 100%. Fix gaps before declaring done.
+
+# E2E Tests
 
 ```ts
 // e2e/checkout.spec.ts — written before implementation begins
@@ -94,6 +106,10 @@ Coverage exclusions in `vitest.config.ts` are pattern-based — they apply to ca
 
 # Verification Checklist
 
-A feature is not complete until:
-1. E2E tests pass — `pnpm e2e`
-2. Unit coverage is 100% on all new/modified hooks, utils, and services — `pnpm test:coverage`
+A feature is not complete until you have shown passing terminal output for every step below, in this order. Act on the output of each step before moving to the next.
+
+1. `pnpm e2e` — fix and re-run until all E2E tests pass
+2. `pnpm test:coverage` — fix gaps and re-run until coverage on all new/modified hooks and services is 100%
+3. `pnpm test:run` — fix any unit test failures before continuing
+4. `pnpm typecheck` — fix every type error before continuing
+5. `pnpm lint` then `pnpm format` then `pnpm check` — address every issue before continuing

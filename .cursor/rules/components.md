@@ -65,6 +65,19 @@ function CheckoutPage() {
 - Use shadcn/ui components from `@/components/ui/` for base UI elements
 - Files in `src/components/ui/` may be edited to match designs — but when pulling an updated version via `npx shadcn@latest add <name>`, manually migrate any local style changes into the newly generated file
 
+# shadcn/ui — Use Before Building
+
+Before building any base UI element (button, input, checkbox, select, dialog, etc.), check whether shadcn/ui provides it.
+
+1. Check `src/components/ui/` — if the component is already installed, use it.
+2. If it is not installed, add it before writing any custom implementation:
+   ```bash
+   npx shadcn@latest add <component-name>
+   ```
+3. Only build a custom element from scratch if shadcn/ui has no equivalent.
+
+Never hand-roll a native `<input type="checkbox">`, `<select>`, `<dialog>`, or similar when a shadcn/ui component exists. Using the library keeps styling, accessibility, and behaviour consistent across the app.
+
 # Routing
 
 - Route files in `src/routes/` export `const Route = createFileRoute('...')({...})`
