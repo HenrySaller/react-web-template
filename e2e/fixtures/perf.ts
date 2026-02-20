@@ -1,11 +1,11 @@
-import { test as base } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import { test as base } from '@playwright/test'
 
 export type WebVitals = {
   ttfb: number // Time to First Byte (ms)
-  fcp: number  // First Contentful Paint (ms)
-  lcp: number  // Largest Contentful Paint (ms)
-  cls: number  // Cumulative Layout Shift (unitless)
+  fcp: number // First Contentful Paint (ms)
+  lcp: number // Largest Contentful Paint (ms)
+  cls: number // Cumulative Layout Shift (unitless)
 }
 
 // Extend the browser Window type to hold accumulated observer values
@@ -57,11 +57,11 @@ async function collectVitals(page: Page): Promise<WebVitals> {
 
 // Auto fixture — active for every test without explicit opt-in.
 // Injects observers before the test runs, attaches collected vitals after.
-export const testWithVitals = base.extend<{ _vitals: void }>({
+export const testWithVitals = base.extend<{ _vitals: undefined }>({
   _vitals: [
     async ({ page }, use, testInfo) => {
       await injectObservers(page)
-      await use()
+      await use(undefined)
       const vitals = await collectVitals(page)
       await testInfo.attach('web-vitals', {
         body: JSON.stringify(vitals),
