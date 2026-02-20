@@ -57,7 +57,7 @@ async function collectVitals(page: Page): Promise<WebVitals> {
 
 // Auto fixture — active for every test without explicit opt-in.
 // Injects observers before the test runs, attaches collected vitals after.
-export const test = base.extend<{ _vitals: void }>({
+export const testWithVitals = base.extend<{ _vitals: void }>({
   _vitals: [
     async ({ page }, use, testInfo) => {
       await injectObservers(page)
@@ -71,5 +71,3 @@ export const test = base.extend<{ _vitals: void }>({
     { auto: true },
   ],
 })
-
-export { expect } from '@playwright/test'
