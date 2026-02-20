@@ -48,6 +48,7 @@ return { state, dispatch, queryResult }
 - Define `queryOptions` in `features/<name>/services/` — not inline in hooks
 - Query keys live alongside their query functions
 - Use `useSuspenseQuery` for data required to render; `useQuery` when partial/loading states are acceptable
+- Any mapping or transformation of API responses belongs in the hook, not the service — services return raw data, hooks reshape it for the component
 
 # Forms
 

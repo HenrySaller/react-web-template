@@ -9,11 +9,14 @@ alwaysApply: false
 | What | Tool | Target |
 |---|---|---|
 | Hooks | Vitest + `renderHook` | 100% meaningful coverage |
-| Utils, lib, services | Vitest | 100% meaningful coverage |
+| Utils, lib | Vitest | 100% meaningful coverage |
+| Services | Playwright E2E only | No unit tests |
 | Components | Playwright E2E only | No unit tests |
 | User flows | Playwright E2E | All critical paths |
 
-Components are covered exclusively through E2E tests. Do not write unit tests for component files.
+Components and services are covered exclusively through E2E tests. Do not write unit tests for them.
+
+Services must stay free of transformation logic — they contain only Zod schemas, query keys, and `queryOptions`/`mutationOptions` wiring. Any logic that maps, derives, or reshapes data belongs in a hook where it can be unit tested.
 
 # Mandatory Workflow — Do Not Deviate
 

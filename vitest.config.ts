@@ -46,6 +46,7 @@ export default defineConfig({
         // covered by E2E tests
         'src/routes/**',
         'src/features/**/components/**',
+        'src/features/**/services/**',
       ],
     },
   },
