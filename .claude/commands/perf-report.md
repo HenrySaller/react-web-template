@@ -1,4 +1,4 @@
-Run the Playwright E2E suite, capture Web Vitals performance metrics, and report them as a signal for iteration.
+Run the Playwright E2E suite, collect Web Vitals from the JSON report, and signal whether performance is good enough to move on.
 
 ## Steps
 
@@ -6,33 +6,40 @@ Run the Playwright E2E suite, capture Web Vitals performance metrics, and report
 
 Run `pnpm e2e` and capture the full output.
 
-### 2. Collect metrics
+### 2. Read the JSON report
 
-Look for Web Vitals data in:
-- Test output (if a performance fixture is in use)
-- `playwright-report/` — check for any generated JSON or HTML reports
-- `test-results/` — check for trace files
+Parse `playwright-report/results.json`. The structure is `suites[n].specs[n].tests[n].results[n].attachments`. For each result, find attachments with the name `web-vitals` and parse their body as base64-decoded JSON. Each attachment contains:
 
-If no performance data is present, report that a performance fixture has not been set up yet and describe what would be needed (a Playwright fixture that calls `page.evaluate(() => performance.getEntriesByType('navigation'))` and captures LCP via `PerformanceObserver`).
+```json
+{ "ttfb": 12, "fcp": 340, "lcp": 410, "cls": 0 }
+```
+
+Values of `-1` mean the metric was not captured (e.g. FCP not fired before `getVitals()` was called).
 
 ### 3. Present metrics
 
-Report results in a structured table:
+For each test that has a `web-vitals` attachment, report a table:
 
-| Metric | Value | Reference budget | Signal |
-|---|---|---|---|
-| LCP (Largest Contentful Paint) | — | < 2.5s | — |
-| FCP (First Contentful Paint) | — | < 1.8s | — |
-| CLS (Cumulative Layout Shift) | — | < 0.1 | — |
-| TTFB (Time to First Byte) | — | < 800ms | — |
+| Test | TTFB | FCP | LCP | CLS |
+|---|---|---|---|---|
+| home page renders | 12ms ✅ | 340ms ✅ | 410ms ✅ | 0.000 ✅ |
 
-Fill in actual measured values. Mark each as **Good**, **Needs work**, or **No data**.
+Reference budgets:
+
+| Metric | Budget |
+|---|---|
+| TTFB | < 800ms |
+| FCP | < 1800ms |
+| LCP | < 2500ms |
+| CLS | < 0.1 |
+
+Mark values within budget ✅ and over budget ❌.
 
 ### 4. Signal
 
 State clearly:
-- Which metrics are within the reference budget
-- Which metrics suggest the current implementation needs optimization
-- Whether performance is good enough to declare the current feature complete, or whether another iteration is warranted
+- Which metrics are within budget across all tests
+- Which metrics are over budget and on which pages
+- Whether performance is good enough to declare the current work complete, or whether another iteration is warranted
 
-These are signals, not hard failures. The goal is to inform the next decision, not block progress.
+Performance results are signals, not hard failures. The goal is to inform the next decision, not block progress.
