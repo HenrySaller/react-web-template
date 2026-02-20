@@ -1,63 +1,75 @@
 import { test as base } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 export type WebVitals = {
-  ttfb: number // ms — Time to First Byte
-  fcp: number  // ms — First Contentful Paint
-  lcp: number  // ms — Largest Contentful Paint
-  cls: number  // unitless — Cumulative Layout Shift
+  ttfb: number // Time to First Byte (ms)
+  fcp: number  // First Contentful Paint (ms)
+  lcp: number  // Largest Contentful Paint (ms)
+  cls: number  // Cumulative Layout Shift (unitless)
 }
 
-/**
- * Extends the base Playwright test with a `getVitals` fixture.
- *
- * Usage: import { test, expect } from './fixtures/perf'
- *
- * The fixture injects PerformanceObserver scripts before page load so LCP and
- * CLS are captured from the very first navigation. Call `getVitals()` after
- * the page has settled to read the collected values.
- */
-export const test = base.extend<{ getVitals: () => Promise<WebVitals> }>({
-  getVitals: async ({ page }, use) => {
-    // Injected before every navigation — sets up LCP and CLS observers
-    await page.addInitScript(() => {
-      ;(window as Window & { __lcp: number; __cls: number }).__lcp = 0
-      ;(window as Window & { __lcp: number; __cls: number }).__cls = 0
+// Extend the browser Window type to hold accumulated observer values
+declare global {
+  interface Window {
+    __vitals: { lcp: number; cls: number }
+  }
+}
 
-      new PerformanceObserver((list) => {
-        const entries = list.getEntries()
-        const last = entries[entries.length - 1]
-        if (last) {
-          ;(window as Window & { __lcp: number }).__lcp = last.startTime
-        }
-      }).observe({ type: 'largest-contentful-paint', buffered: true })
+// TS lib doesn't include layout-shift entry shape
+interface LayoutShift extends PerformanceEntry {
+  value: number
+  hadRecentInput: boolean
+}
 
-      new PerformanceObserver((list) => {
-        for (const entry of list.getEntries()) {
-          if (!(entry as PerformanceEntry & { hadRecentInput: boolean }).hadRecentInput) {
-            ;(window as Window & { __cls: number }).__cls +=
-              (entry as PerformanceEntry & { value: number }).value
-          }
-        }
-      }).observe({ type: 'layout-shift', buffered: true })
-    })
+// Injected before every navigation so LCP and CLS are tracked from first paint
+async function injectObservers(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    window.__vitals = { lcp: 0, cls: 0 }
 
-    await use(async () => {
-      return page.evaluate(() => {
-        const nav = performance.getEntriesByType(
-          'navigation',
-        )[0] as PerformanceNavigationTiming
-        const fcpEntry = performance.getEntriesByName('first-contentful-paint')[0]
-        const w = window as Window & { __lcp: number; __cls: number }
+    new PerformanceObserver((list) => {
+      const last = list.getEntries().at(-1)
+      if (last) window.__vitals.lcp = last.startTime
+    }).observe({ type: 'largest-contentful-paint', buffered: true })
 
-        return {
-          ttfb: Math.round(nav.responseStart - nav.requestStart),
-          fcp: Math.round(fcpEntry?.startTime ?? -1),
-          lcp: Math.round(w.__lcp ?? -1),
-          cls: Math.round((w.__cls ?? 0) * 1000) / 1000,
-        }
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        const shift = entry as LayoutShift
+        if (!shift.hadRecentInput) window.__vitals.cls += shift.value
+      }
+    }).observe({ type: 'layout-shift', buffered: true })
+  })
+}
+
+// Reads all metrics from the page after it has settled
+async function collectVitals(page: Page): Promise<WebVitals> {
+  return page.evaluate(() => {
+    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+    const fcp = performance.getEntriesByName('first-contentful-paint')[0]
+
+    return {
+      ttfb: Math.round(nav.responseStart - nav.requestStart),
+      fcp: Math.round(fcp?.startTime ?? -1),
+      lcp: Math.round(window.__vitals.lcp),
+      cls: Math.round(window.__vitals.cls * 1000) / 1000,
+    }
+  })
+}
+
+// Auto fixture — active for every test without explicit opt-in.
+// Injects observers before the test runs, attaches collected vitals after.
+export const test = base.extend<{ _vitals: void }>({
+  _vitals: [
+    async ({ page }, use, testInfo) => {
+      await injectObservers(page)
+      await use()
+      const vitals = await collectVitals(page)
+      await testInfo.attach('web-vitals', {
+        body: JSON.stringify(vitals),
+        contentType: 'application/json',
       })
-    })
-  },
+    },
+    { auto: true },
+  ],
 })
 
 export { expect } from '@playwright/test'
