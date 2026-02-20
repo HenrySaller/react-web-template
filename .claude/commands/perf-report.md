@@ -8,7 +8,7 @@ Run `pnpm e2e` and capture the full output.
 
 ### 2. Read the JSON report
 
-Parse `playwright-report/results.json`. The structure is `suites[n].specs[n].tests[n].results[n].attachments`. For each result, find attachments with the name `web-vitals` and parse their body as base64-decoded JSON. Each attachment contains:
+Read `playwright-report/results.json` directly. The structure is `suites[n].specs[n].tests[n].results[n].attachments`. For each result, find attachments with the name `web-vitals` and parse their body as base64-decoded JSON. Each attachment contains:
 
 ```json
 { "ttfb": 12, "fcp": 340, "lcp": 410, "cls": 0 }
