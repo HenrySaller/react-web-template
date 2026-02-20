@@ -11,8 +11,8 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
-    setupFiles: ['./tests/setup.ts'],
-    include: ['tests/**/*.{test,spec}.{ts,tsx}', 'src/**/*.{test,spec}.{ts,tsx}'],
+    setupFiles: ['./vitest.setup.ts'],
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['e2e/**', 'node_modules/**'],
     coverage: {
       provider: 'v8',
@@ -45,6 +45,7 @@ export default defineConfig({
 
         // covered by E2E tests
         'src/routes/**',
+        'src/features/**/components/**',
       ],
     },
   },

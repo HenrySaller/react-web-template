@@ -48,6 +48,11 @@ test.describe('checkout', () => {
 })
 ```
 
+# File Placement
+
+- **Unit tests**: colocated next to the file under test — `src/lib/utils.test.ts` alongside `src/lib/utils.ts`, `src/features/cart/hooks/useCart.test.ts` alongside `useCart.ts`
+- **E2E tests**: always in `e2e/` — they test the running app, not individual modules, so colocation does not apply
+
 # Unit Tests — Hooks and Utils
 
 Test behaviour and outcomes — not internal state or implementation details. Assert on what the hook returns and what side effects occur.
