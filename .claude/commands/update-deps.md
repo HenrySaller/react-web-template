@@ -12,6 +12,8 @@ If empty, update all dependencies in `package.json`.
 Run `pnpm outdated --format json` to get current and latest versions in one shot.
 If `$ARGUMENTS` is provided, filter to those packages. Skip any that are already up to date.
 
+For `@types/*` packages, the major version must match the runtime tool — e.g. `@types/node` must stay on the same major as the Node.js version in use (`node --version`). Never bump a `@types/*` package to a major version ahead of the runtime.
+
 ### 2. Read changelogs
 
 For each outdated package, run `pnpm view <pkg> repository.url` to get the GitHub URL, then fetch the releases or CHANGELOG.md covering the range from current to latest. Extract only what is relevant to this codebase:
